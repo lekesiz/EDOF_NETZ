@@ -1,0 +1,49 @@
+[project]
+name = "edof-netz"
+version = "0.1.0"
+description = "Backend for EDOF-NETZ ERP"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "sqlmodel>=0.0.22",
+    "alembic>=1.14",
+    "psycopg2-binary>=2.9",
+    "redis>=5.2",
+    "celery>=5.4",
+    "pydantic-settings>=2.6",
+    "python-multipart>=0.0.17",
+    "passlib[bcrypt]>=1.7",
+    "python-jose[cryptography]>=3.3",
+    "httpx>=0.27",
+    "structlog>=24.4",
+    "wedof-sdk @ git+https://github.com/lekesiz/wedof-sdk.git",
+    "pennylane-sdk @ git+https://github.com/lekesiz/pennylane.git",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "respx",
+    "httpx",
+    "ruff",
+    "mypy",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/edof_netz"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+python_version = "3.13"
+strict = true

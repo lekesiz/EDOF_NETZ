@@ -1,0 +1,30 @@
+services:
+  edof-netz:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edof-netz
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgresql://edofnetz:edofnetz@localhost:5432/edofnetz
+      - REDIS_URL=redis://localhost:6379/0
+      - SECRET_KEY=local-secret-key-change-in-production
+      - WEDOF_API_KEY=${WEDOF_API_KEY:-}
+      - PENNYLANE_API_TOKEN=${PENNYLANE_API_TOKEN:-}
+      - CELERY_BROKER_URL=redis://localhost:6379/0
+      - CELERY_RESULT_BACKEND=redis://localhost:6379/0
+    volumes:
+      - pgdata:/var/lib/postgresql/17/main
+      - redisdata:/var/lib/redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  pgdata:
+  redisdata:
