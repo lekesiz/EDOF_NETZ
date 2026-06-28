@@ -189,6 +189,16 @@ def sync_training_actions(limit: int = 100) -> dict[str, int]:
     return {"training_actions": count}
 
 
+def _parse_wedof_paid_date(raw: dict[str, Any]) -> datetime | None:
+    """Extract paid date from WEDOF folder raw data."""
+    history = raw.get("history") or {}
+    if isinstance(history, dict):
+        return _parse_datetime(
+            history.get("paidDate") or history.get("paymentDate") or raw.get("paymentDate")
+        )
+    return _parse_datetime(raw.get("paymentDate"))
+
+
 def sync_registration_folders(limit: int = 100) -> dict[str, int]:
     """Fetch all registration folders from Wedof and upsert them locally."""
     with get_wedof_client() as client, Session(engine) as session:
@@ -225,6 +235,7 @@ def sync_registration_folders(limit: int = 100) -> dict[str, int]:
             folder.amount_ht = _float_value(raw, "amountHt", "totalHT") or folder.amount_ht
             folder.created_on = _parse_datetime(raw.get("createdOn")) or folder.created_on
             folder.updated_on = _parse_datetime(raw.get("updatedOn")) or folder.updated_on
+            folder.wedof_paid_date = _parse_wedof_paid_date(raw) or folder.wedof_paid_date
             folder.training_action_external_id = (
                 _str_value(raw, "trainingActionExternalId") or folder.training_action_external_id
             )
@@ -323,6 +334,7 @@ def refresh_registration_folder(external_id: str) -> dict[str, Any]:
         folder.amount_ht = _float_value(raw, "amountHt", "totalHT") or folder.amount_ht
         folder.created_on = _parse_datetime(raw.get("createdOn")) or folder.created_on
         folder.updated_on = _parse_datetime(raw.get("updatedOn")) or folder.updated_on
+        folder.wedof_paid_date = _parse_wedof_paid_date(raw) or folder.wedof_paid_date
         folder.training_action_external_id = (
             _str_value(raw, "trainingActionExternalId") or folder.training_action_external_id
         )

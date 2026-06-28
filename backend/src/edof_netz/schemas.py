@@ -33,11 +33,16 @@ class UserLogin(BaseModel):
 class RegistrationFolderListItem(BaseModel):
     id: str
     external_id: str
+    attendee_id: str | None = None
     state: str | None = None
     billing_state: str | None = None
     amount_ttc: float | None = None
     created_on: str | None = None
     updated_on: str | None = None
+    is_reconciled: bool = False
+    pennylane_invoice_number: str | None = None
+    pennylane_paid_date: str | None = None
+    wedof_paid_date: str | None = None
 
 
 class AttendeeListItem(BaseModel):
@@ -84,3 +89,28 @@ class InvoiceableCandidateItem(BaseModel):
     created_on: str | None = None
     training_action_external_id: str | None = None
     attendee: AttendeeListItem | None = None
+
+
+class DashboardStats(BaseModel):
+    target_amount: float
+    realized: float
+    remaining: float
+    kasa: float
+    alacak: float
+    kayip: float
+    total_dossiers: int
+    reconciled_count: int
+
+
+class MonthlyData(BaseModel):
+    month: str
+    kasa: float
+    alacak: float
+    kayip: float
+
+
+class DashboardResponse(BaseModel):
+    year: int
+    stats: DashboardStats
+    monthly_data: list[MonthlyData]
+    last_sync: dict[str, str | None]

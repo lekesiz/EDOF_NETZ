@@ -8,7 +8,7 @@ from .auth import get_password_hash, require_role
 from .config import get_settings
 from .db import create_db_and_tables, engine
 from .models import HealthCheck, Organization, User, UserRole
-from .routers import auth, folders, invoices, pennylane, sync, webhooks
+from .routers import auth, dashboard, folders, invoices, pennylane, sync, webhooks
 
 settings = get_settings()
 
@@ -18,6 +18,7 @@ app = FastAPI(
 )
 
 app.include_router(auth.router)
+app.include_router(dashboard.router)
 app.include_router(folders.router)
 app.include_router(invoices.router)
 app.include_router(pennylane.router)

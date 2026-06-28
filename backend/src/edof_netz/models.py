@@ -89,6 +89,11 @@ class RegistrationFolder(SQLModel, table=True):
     amount_ht: float | None = None
     created_on: datetime | None = None
     updated_on: datetime | None = None
+    is_reconciled: bool = Field(default=False)
+    pennylane_invoice_id: str | None = None
+    pennylane_invoice_number: str | None = None
+    pennylane_paid_date: datetime | None = None
+    wedof_paid_date: datetime | None = None
     raw_data: dict[str, Any] | None = Field(default=None, sa_column=Column(JSONB))
     created_at: datetime = Field(default_factory=utc_now)
     updated_at: datetime = Field(default_factory=utc_now)
@@ -120,6 +125,14 @@ class Invoice(SQLModel, table=True):
     pennylane_invoice_id: str | None = None
     raw_data: dict[str, Any] | None = Field(default=None, sa_column=Column(JSONB))
     created_at: datetime = Field(default_factory=utc_now)
+    updated_at: datetime = Field(default_factory=utc_now)
+
+
+class Settings(SQLModel, table=True):
+    id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
+    key: str = Field(index=True, unique=True)
+    value: str
+    description: str | None = None
     updated_at: datetime = Field(default_factory=utc_now)
 
 
