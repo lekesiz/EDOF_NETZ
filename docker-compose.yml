@@ -11,6 +11,8 @@ services:
       - DATABASE_URL=postgresql://edofnetz:edofnetz@localhost:5432/edofnetz
       - REDIS_URL=redis://localhost:6379/0
       - SECRET_KEY=local-secret-key-change-in-production
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
       - WEDOF_API_KEY=${WEDOF_API_KEY:-}
       - PENNYLANE_API_TOKEN=${PENNYLANE_API_TOKEN:-}
       - CELERY_BROKER_URL=redis://localhost:6379/0

@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     pennylane_api_token: str | None = None
     pennylane_default_vat_rate: str = "FR_200"
 
+    admin_email: str | None = None
+    admin_password: str | None = None
+
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24  # 1 day
 

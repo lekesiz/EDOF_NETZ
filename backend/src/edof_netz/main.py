@@ -4,7 +4,7 @@ import redis
 from fastapi import Depends, FastAPI
 from sqlmodel import Session, select
 
-from .auth import require_role
+from .auth import get_password_hash, require_role
 from .config import get_settings
 from .db import create_db_and_tables, engine
 from .models import HealthCheck, Organization, User, UserRole
@@ -25,9 +25,27 @@ app.include_router(sync.router)
 app.include_router(webhooks.router)
 
 
+def _ensure_admin_user() -> None:
+    """Create or update the bootstrap admin user from environment variables."""
+    if not settings.admin_email or not settings.admin_password:
+        return
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.email == settings.admin_email)).first()
+        if user is None:
+            user = User(
+                email=settings.admin_email,
+                role=UserRole.SUPERUSER,
+                is_active=True,
+            )
+            session.add(user)
+        user.hashed_password = get_password_hash(settings.admin_password)
+        session.commit()
+
+
 @app.on_event("startup")
 def on_startup() -> None:
     create_db_and_tables()
+    _ensure_admin_user()
 
 
 @app.get("/health", response_model=HealthCheck)
