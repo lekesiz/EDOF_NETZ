@@ -109,11 +109,9 @@ export default function DashboardPage() {
           <button
             className="btn btn-success"
             disabled={!canManage}
-            onClick={() =>
-              runAction("Pennylane fatura gönderimi", apiPost("/pennylane/push/invoices"))
-            }
+            onClick={() => (window.location.href = "/invoicing/daily")}
           >
-            Faturaları Pennylane’e Gönder
+            Günlük Faturalanacakları Gör
           </button>
           <button
             className="btn btn-outline"

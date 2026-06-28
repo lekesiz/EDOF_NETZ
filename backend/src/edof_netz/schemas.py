@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
 
 from .models import UserRole
 
@@ -70,3 +70,17 @@ class InvoiceListItem(BaseModel):
     registration_folder_external_id: str | None = None
     pennylane_customer_id: str | None = None
     pennylane_invoice_id: str | None = None
+
+
+class InvoiceableCandidateItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    external_id: str
+    state: str | None = None
+    billing_state: str | None = None
+    amount_ttc: float | None = None
+    amount_ht: float | None = None
+    created_on: str | None = None
+    training_action_external_id: str | None = None
+    attendee: AttendeeListItem | None = None

@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth";
 
 const nav = [
   { href: "/dashboard", label: "Dashboard" },
+  { href: "/invoicing/daily", label: "Günlük Faturalanacaklar" },
   { href: "/folders/registration", label: "Kayıt Dosyaları" },
   { href: "/folders/certification", label: "Sertifikasyon Dosyaları" },
   { href: "/attendees", label: "Katılımcılar" },

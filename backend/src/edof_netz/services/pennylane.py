@@ -4,9 +4,10 @@ from __future__ import annotations
 import json
 import logging
 from datetime import date, datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from typing import Any
 
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlmodel import Session, select
 from pennylane_sdk import PennylaneClient
 
@@ -235,6 +236,48 @@ def push_registration_folder_as_invoice(
         "pennylane_invoice_id": pennylane_invoice_id,
         "draft": draft,
     }
+
+
+def get_invoiceable_folders(
+    target_date: date | None = None,
+    billing_state: str = "toBill",
+    limit: int = 100,
+) -> list[RegistrationFolder]:
+    """Return registration folders that are ready to be invoiced today.
+
+    Criteria:
+    - billing_state matches the requested value (default "toBill").
+    - Has an amount (TTC or HT).
+    - Not in a cancelled/refused/rejected state.
+    - created_on matches the target date (default today in UTC).
+    - Not already pushed to Pennylane.
+    """
+    if target_date is None:
+        target_date = datetime.now(ZoneInfo("Europe/Paris")).date()
+
+    with Session(engine) as session:
+        pushed_subquery = select(Invoice.registration_folder_external_id).where(
+            Invoice.registration_folder_external_id.isnot(None),  # type: ignore[union-attr]
+            Invoice.pennylane_invoice_id.isnot(None),  # type: ignore[union-attr]
+        )
+        # Compare dates in Europe/Paris because the business day is what matters.
+        paris_date = func.date(func.timezone("Europe/Paris", RegistrationFolder.created_on))
+        statement = (
+            select(RegistrationFolder)
+            .where(
+                RegistrationFolder.billing_state == billing_state,
+                or_(
+                    RegistrationFolder.amount_ttc.isnot(None),  # type: ignore[union-attr]
+                    RegistrationFolder.amount_ht.isnot(None),  # type: ignore[union-attr]
+                ),
+                RegistrationFolder.state.notin_(list(_CANCELED_STATES)),  # type: ignore[union-attr]
+                paris_date == target_date,
+                RegistrationFolder.external_id.notin_(pushed_subquery),  # type: ignore[attr-defined]
+            )
+            .order_by(RegistrationFolder.created_on.desc())  # type: ignore[union-attr]
+            .limit(limit)
+        )
+        return list(session.exec(statement).all())
 
 
 def push_all_invoices(*, draft: bool = True, limit: int = 100) -> dict[str, Any]:
