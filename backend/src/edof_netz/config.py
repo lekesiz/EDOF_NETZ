@@ -22,7 +22,12 @@ class Settings(BaseSettings):
     celery_result_backend: str = "redis://localhost:6379/0"
 
     wedof_api_key: str | None = None
+    wedof_webhook_secret: str | None = None
     pennylane_api_token: str | None = None
+    pennylane_default_vat_rate: str = "FR_200"
+
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60 * 24  # 1 day
 
 
 @lru_cache

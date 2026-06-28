@@ -7,7 +7,18 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 # Import all models so Alembic can discover them
-from edof_netz.models import Organization, User  # noqa: F401
+from edof_netz.models import (  # noqa: F401
+    Attendee,
+    CertificationFolder,
+    Invoice,
+    Organization,
+    RegistrationFolder,
+    Training,
+    TrainingAction,
+    User,
+    WedofSyncState,
+    WedofWebhookEvent,
+)
 
 config = context.config
 

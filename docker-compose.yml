@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: edof-netz
     ports:
-      - "3000:3000"
+      - "8080:3000"
     environment:
       - PORT=3000
       - DATABASE_URL=postgresql://edofnetz:edofnetz@localhost:5432/edofnetz
